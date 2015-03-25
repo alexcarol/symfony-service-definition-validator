@@ -5,6 +5,7 @@ namespace Matthias\SymfonyServiceDefinitionValidator;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\InvalidExpressionSyntaxException;
 use Matthias\SymfonyServiceDefinitionValidator\Exception\TypeHintMismatchException;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\ExpressionLanguage;
@@ -69,6 +70,9 @@ class ArgumentValidator implements ArgumentValidatorInterface
 
     private function validateReferenceArgument($className, Reference $reference)
     {
+        if (Container::EXCEPTION_ON_INVALID_REFERENCE !== $reference->getInvalidBehavior()) {
+            return;
+        }
         // the __toString method of a Reference is the referenced service id
         $referencedServiceId = (string)$reference;
         $definition = $this->containerBuilder->findDefinition($referencedServiceId);
